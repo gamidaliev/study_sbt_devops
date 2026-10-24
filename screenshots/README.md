@@ -1,20 +1,11 @@
-# Скриншоты проверки
+# Скриншот проверки на Windows
 
-Добавить после реального запуска на Windows с Docker Desktop:
+Файл [verification-windows.png](verification-windows.png) содержит результат реального запуска в PowerShell с Docker Desktop:
 
-1. `01-container-healthy.png`: результат `docker compose -f docker_compose.yml ps` со статусом **healthy**.
-2. `02-health-200.png`: результат `curl.exe -i http://localhost:8080/health` с **HTTP/1.1 200 OK** и JSON.
-3. `03-non-root.png`: результат `docker compose -f docker_compose.yml exec app id` с UID/GID **10001**.
+1. `docker compose -f docker_compose.yml ps` — контейнер **healthy**, порт **8080** опубликован.
+2. `curl.exe -i http://localhost:8080/health` — **HTTP/1.1 200 OK**, `{"app":"hw2-demo","status":"UP"}`.
+3. `docker compose -f docker_compose.yml exec app id` — **uid=10001(app) gid=10001(app)**.
 
-Можно добавить скриншот Docker Desktop вместо первого снимка, если на нём видны контейнер и статус.
-Изображения должны показывать фактический запуск, а не пример ожидаемого вывода.
+![Результаты проверки](verification-windows.png)
 
-После сохранения файлов в эту папку из корня репозитория:
-
-```powershell
-git add screenshots
-git commit -m "docs: add Docker lab verification screenshots"
-git push origin hw2
-```
-
-Открытый PR обновится автоматически. На момент подготовки исходников скриншоты ещё не добавлены.
+Один скриншот подтверждает все три проверки. Публикация образа в registry этим скриншотом не подтверждается.

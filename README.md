@@ -232,10 +232,15 @@ go vet ./...
 
 ## 7. Скриншоты для сдачи
 
-После реального запуска сохрани снимки в `screenshots/` и добавь их в **эту же
-ветку `hw2`**. Команды перечислены в [screenshots/README.md](screenshots/README.md).
-Нужны статус healthy, HTTP 200 с JSON, желательно также UID/GID процесса.
-Новый коммит автоматически попадёт в открытый PR `hw2` → `main`.
+Приложение проверено на Windows с Docker Desktop. На одном скриншоте показаны:
+
+- контейнер `study_sbt_devops-app-1` в состоянии **healthy**;
+- запрос `GET /health`: **HTTP/1.1 200 OK**, JSON со статусом `UP`;
+- запуск от пользователя `app` с UID/GID **10001**.
+
+![Проверка контейнера, /health и non-root](screenshots/verification-windows.png)
+
+Описание команд: [screenshots/README.md](screenshots/README.md).
 
 ## Материалы
 
