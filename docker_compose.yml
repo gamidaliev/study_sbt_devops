@@ -1,0 +1,20 @@
+services:
+  app:
+    build:
+      context: .
+      target: runtime
+    image: study-sbt-devops:hw2
+    ports:
+      - "${HOST_PORT:-8080}:8080"
+    environment:
+      APP_PORT: "8080"
+      APP_NAME: "${APP_NAME:-hw2-demo}"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    mem_limit: 128m
+    cpus: 0.5
+    stop_grace_period: 10s
