@@ -73,6 +73,14 @@ docker login --username $RegistryUser
 docker compose down
 ```
 
-## Скриншоты
+## Результаты проверки на Windows
 
-Проверки для фиксации результатов перечислены в [screenshots/README.md](screenshots/README.md).
+Все три сервиса находятся в состоянии **healthy**. Запрос через Nginx возвращает
+**HTTP 200**, PostgreSQL доступен. На хост опубликован только порт **80** Nginx.
+
+![Статус сервисов и HTTP 200 через Nginx](screenshots/stack-health.png)
+
+Запись `saved-from-hw3` с `id=1` сохранилась после `docker compose down`
+и повторного создания контейнеров командой `docker compose up -d --wait`.
+
+![Сохранение записи PostgreSQL после пересоздания контейнеров](screenshots/postgres-persistence.png)

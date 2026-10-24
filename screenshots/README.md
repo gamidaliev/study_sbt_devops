@@ -1,9 +1,4 @@
-# Проверка стека
+# Результаты проверки
 
-Скриншоты добавляются после фактического запуска на Windows:
-
-- `docker compose ps` — три сервиса, опубликован только порт Nginx `80:80`.
-- `curl.exe -i http://localhost/health` — HTTP 200 через Nginx, PostgreSQL доступен.
-- `GET /messages` до и после `docker compose down` / `docker compose up -d --wait` — сохранённая запись присутствует в обоих ответах.
-
-Фактические скриншоты в этой ветке пока отсутствуют.
+- [stack-health.png](stack-health.png) — три healthy-сервиса, HTTP 200 через Nginx, опубликован только порт 80.
+- [postgres-persistence.png](postgres-persistence.png) — запись PostgreSQL сохранена после удаления и повторного создания контейнеров.
