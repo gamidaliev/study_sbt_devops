@@ -4,8 +4,7 @@
 
 ## ДЗ №2. Сначала сборка, потом runtime
 
-Небольшое HTTP-приложение на Go со стандартной библиотекой. Условие разрешает
-использовать другое приложение вместо Spring Boot. Все исходники находятся в
+Небольшое HTTP-приложение на Go со стандартной библиотекой. Все исходники находятся в
 `main.go`; внешний сервер, база данных, локальная установка Go и Java для запуска
 лабораторной не нужны.
 
@@ -23,8 +22,7 @@
 ## 1. Подготовка на Windows
 
 Нужны Git и запущенный Docker Desktop в режиме **Linux containers** с Docker
-Compose v2. Команды ниже выполняются в **PowerShell**. В Windows PowerShell
-используем именно `curl.exe`, поскольку `curl` может быть псевдонимом другой команды.
+Compose v2. Команды ниже выполняются в **PowerShell**.
 
 Если репозиторий ещё не склонирован:
 
@@ -33,30 +31,7 @@ git clone --branch hw2 https://github.com/gamidaliev/study_sbt_devops.git
 cd study_sbt_devops
 ```
 
-Если уже склонирован, открой PowerShell в его папке и выполни:
-
-```powershell
-git fetch origin
-git switch hw2
-git pull --ff-only origin hw2
-```
-
-При первом переключении Git создаст локальную `hw2` из `origin/hw2` автоматически.
-Сначала сохрани незакоммиченные изменения, если они есть.
-
-```powershell
-docker version
-docker compose version
-docker info --format '{{.OSType}}'
-```
-
-Последняя команда должна показать `linux`. Для первой сборки нужен интернет,
-чтобы скачать базовые образы. Сторонних Go-зависимостей нет.
-
 ## 2. Сборка и запуск через Compose
-
-Файл намеренно назван `docker_compose.yml`, как в задании, поэтому всегда
-указываем его через `-f`.
 
 ```powershell
 docker compose -f docker_compose.yml up -d --build --wait --wait-timeout 120
