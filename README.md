@@ -69,35 +69,7 @@ docker compose -f docker_compose.yml logs --tail 50 app
 docker compose -f docker_compose.yml down
 ```
 
-## 3. Приёмка через обычный docker run
-
-Сначала останови Compose командой `down`, чтобы освободить порт 8080.
-
-```powershell
-docker build --pull --target runtime -t study-sbt-devops:hw2 .
-docker run -d --name hw2-app -p 8080:8080 -e APP_NAME=run-demo study-sbt-devops:hw2
-curl.exe --fail-with-body -i http://localhost:8080/health
-docker ps --filter name=hw2-app
-docker inspect --format '{{.State.Health.Status}}' hw2-app
-docker exec hw2-app id
-```
-
-Ответ `/health` должен содержать `"app":"run-demo"`. Статус healthcheck через
-10–20 секунд — `healthy`; `id` показывает UID/GID `10001`, а не root.
-Команда `HEALTHCHECK` встроена в образ и работает также без Compose.
-
-Проверка другого **внутреннего** порта (не запускать одновременно с предыдущим
-контейнером на порту Windows 8080):
-
-```powershell
-docker rm -f hw2-app
-docker run -d --name hw2-app -p 8080:9090 -e APP_PORT=9090 -e APP_NAME=custom-port study-sbt-devops:hw2
-curl.exe --fail-with-body -i http://localhost:8080/health
-docker exec hw2-app /app/app healthcheck
-docker rm -f hw2-app
-```
-
-## 4. Проверка безопасности и устройства образа
+## 3. Проверка безопасности и устройства образа
 
 После запуска через Compose:
 
@@ -142,7 +114,7 @@ Registry технически может переназначить тег, по
 образ по digest (см. ниже). Битовая идентичность всего OCI-образа между разными
 версиями BuildKit не заявляется; зафиксированы исходники, toolchain и базовые слои.
 
-## 5. Сборка и публикация в registry
+## 4. Сборка и публикация в registry
 
 В репозитории есть скрипт **`scripts/build-push.ps1`**. Он собирает runtime-образ,
 проверяет код завершения Docker и загружает образ в указанный registry.
@@ -193,7 +165,7 @@ docker image inspect gamidaliev/study-sbt-devops:hw2-v1 --format '{{json .RepoDi
 используй её вместо тега в `docker pull`/`docker run`. Сборка в примере рассчитана
 на архитектуру текущего Docker Engine; это не multi-platform публикация.
 
-## 6. Тесты приложения отдельно от Docker
+## 5. Тесты приложения отдельно от Docker
 
 При установленном Go 1.26.10:
 
@@ -205,7 +177,7 @@ go vet ./...
 Тесты проверяют контракт `/health`, отказ healthcheck при ошибочном HTTP-статусе
 или недоступном сервере, допустимые и недопустимые значения `APP_PORT`.
 
-## 7. Скриншоты для сдачи
+## 6. Скриншоты для сдачи
 
 Приложение проверено на Windows с Docker Desktop. На одном скриншоте показаны:
 
@@ -216,18 +188,3 @@ go vet ./...
 ![Проверка контейнера, /health и non-root](screenshots/verification-windows.png)
 
 Описание команд: [screenshots/README.md](screenshots/README.md).
-
-## Материалы
-
-Использованы темы из предоставленных лекций: образ и контейнер, слои,
-инструкции Dockerfile, публикация портов, registry, Docker Compose, cgroups:
-
-- [Docker — вводная](https://drive.google.com/file/d/1TeaU8vmNHzrelNjwY1EpQ9hPxxbr2_x_/view).
-- [Docker — инструкции и команды](https://drive.google.com/file/d/13G5gWyBcyD5Iy12_0iZVHWxWdfh-raMg/view).
-- [Официальный справочник Dockerfile](https://docs.docker.com/reference/dockerfile/).
-- [Multi-stage builds](https://docs.docker.com/build/building/multi-stage/).
-
-В лекции встречается `docker-compose` и поле `version`; здесь используются
-современная команда `docker compose` и Compose Specification без устаревшего
-поля `version`. Дополнительные требования из задания (multi-stage, non-root,
-exec healthcheck) реализованы непосредственно в Dockerfile.
