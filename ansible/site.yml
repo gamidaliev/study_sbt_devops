@@ -1,0 +1,25 @@
+---
+- name: Check and prepare managed servers
+  hosts: all
+  gather_facts: false
+  pre_tasks:
+    - name: Wait for SSH and Python
+      ansible.builtin.wait_for_connection:
+        timeout: 120
+    - name: Gather server facts
+      ansible.builtin.setup:
+  roles:
+    - common
+
+- name: Deploy the application
+  hosts: application
+  roles:
+    - application
+
+- name: Install and configure nginx
+  hosts: web
+  roles:
+    - nginx
+
+- name: Verify deployment
+  ansible.builtin.import_playbook: verify.yml

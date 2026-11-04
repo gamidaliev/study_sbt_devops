@@ -1,0 +1,26 @@
+---
+- name: Verify HTTP API through nginx
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Wait for HTTP 200 through nginx
+      ansible.builtin.uri:
+        url: http://nginx/health
+        status_code: 200
+        return_content: true
+      register: proxy_health
+      until: proxy_health.status == 200
+      retries: 20
+      delay: 2
+
+    - name: Check application and database status
+      ansible.builtin.assert:
+        that:
+          - proxy_health.json.status == 'UP'
+          - proxy_health.json.db == 'UP'
+
+    - name: Check messages endpoint
+      ansible.builtin.uri:
+        url: http://nginx/messages
+        status_code: 200

@@ -1,0 +1,31 @@
+name: Ansible lab
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      POSTGRES_DB: messages
+      POSTGRES_USER: app
+      HTTP_PORT: 8088
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate temporary database password
+        run: |
+          password=$(openssl rand -hex 24)
+          echo "::add-mask::$password"
+          echo "POSTGRES_PASSWORD=$password" >> "$GITHUB_ENV"
+      - name: Build and check deployment
+        run: bash scripts/check.sh
+      - name: Show diagnostics
+        if: failure()
+        run: docker compose logs --tail 100
+      - name: Remove test environment
+        if: always()
+        run: docker compose down -v

@@ -1,0 +1,25 @@
+---
+- name: Check operating system and available memory
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['distribution'] == 'Ubuntu'
+      - ansible_facts['distribution_version'] == '24.04'
+      - ansible_facts['architecture'] in ['x86_64', 'aarch64']
+      - ansible_facts['memtotal_mb'] >= 256
+    fail_msg: Ubuntu 24.04 on amd64/arm64 with at least 256 MB RAM is required
+
+- name: Check the process manager
+  ansible.builtin.command: supervisorctl status sshd
+  changed_when: false
+
+- name: Install deployment utilities
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - tar
+      - gzip
+      - curl
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+    policy_rc_d: 101

@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+cd {{ app_dir | quote }}
+set -a
+. ./app.env
+set +a
+exec ./app

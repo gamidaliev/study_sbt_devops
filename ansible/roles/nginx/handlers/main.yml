@@ -1,0 +1,15 @@
+---
+- name: Reread nginx process configuration
+  ansible.builtin.command: supervisorctl reread
+  changed_when: true
+  listen: Restart nginx
+
+- name: Update nginx process configuration
+  ansible.builtin.command: supervisorctl update
+  changed_when: true
+  listen: Restart nginx
+
+- name: Restart nginx process
+  ansible.builtin.command: supervisorctl restart nginx
+  changed_when: true
+  listen: Restart nginx
