@@ -1,0 +1,10 @@
+---
+app_dir: /opt/messages
+app_user: messages
+app_port: 8080
+app_archive: /artifacts/app.tar.gz
+db_host: db
+db_port: 5432
+db_name: "{{ lookup('ansible.builtin.env', 'POSTGRES_DB') }}"
+db_user: "{{ lookup('ansible.builtin.env', 'POSTGRES_USER') }}"
+db_password: "{{ lookup('ansible.builtin.env', 'POSTGRES_PASSWORD') }}"

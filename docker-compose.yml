@@ -1,0 +1,82 @@
+name: ansible-hw4
+
+services:
+  ansible:
+    build:
+      context: .
+      dockerfile: docker/control/Dockerfile
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-messages}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - ssh_private:/root/.ssh
+      - ssh_public:/public
+    networks: [lab]
+    healthcheck:
+      test: [CMD-SHELL, "test -s /public/id_ed25519.pub && test -s /root/.ssh/id_ed25519"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/host/Dockerfile
+    hostname: nginx
+    ports:
+      - "127.0.0.1:${HTTP_PORT:-8088}:80"
+    volumes:
+      - ssh_public:/public:ro
+    networks: [lab]
+    depends_on:
+      ansible:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD-SHELL, "supervisorctl status sshd | grep -q RUNNING"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/host/Dockerfile
+    hostname: app
+    volumes:
+      - ssh_public:/public:ro
+    networks: [lab]
+    depends_on:
+      ansible:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD-SHELL, "supervisorctl status sshd | grep -q RUNNING"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+
+  db:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-messages}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [lab]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+networks:
+  lab:
+    driver: bridge
+
+volumes:
+  ssh_private:
+  ssh_public:
+  pgdata:
