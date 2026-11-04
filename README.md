@@ -185,10 +185,29 @@ SSH-ключ создаётся автоматически и хранится �
 контейнерами. Внешние SSH-порты не публикуются. Для настоящих серверов следует
 использовать проверенные host keys и отдельного пользователя с `become`.
 
-## Скриншоты для отчёта
+## Результаты проверки на Windows
 
-Для проверки лабораторной нужны:
+Стенд запущен в Docker Desktop из PowerShell. Все четыре контейнера работают,
+оба управляемых узла отвечают на Ansible ping.
 
-1. `docker compose ps` с четырьмя запущенными контейнерами и итог `PLAY RECAP`.
-2. HTTP 200 для `/health`, создание и чтение сообщения через nginx.
-3. Повторный `PLAY RECAP` с `changed=0`.
+![Контейнеры и подключение Ansible по SSH](screenshots/containers-and-ssh.png)
+
+Первый деплой завершился без ошибок: для всех узлов `failed=0` и `unreachable=0`.
+Проверка HTTP API и подключения к БД прошла успешно.
+
+![Первый деплой и PLAY RECAP](screenshots/deployment.png)
+
+Запрос через nginx к `/health` вернул HTTP 200, приложение и БД имеют статус
+`UP`. Сообщение `saved-from-ansible` создано с `id=1` и прочитано через API.
+Процессы приложения и nginx находятся в состоянии `RUNNING`.
+
+![HTTP API и состояние процессов](screenshots/application-api.png)
+
+Повторный запуск основного playbook завершился с `changed=0`, `failed=0`
+и `unreachable=0` на всех узлах.
+
+![Повторный деплой без изменений](screenshots/idempotence.png)
+
+Отдельный проверочный playbook `verify.yml` также завершился успешно.
+
+![Проверка приложения через nginx](screenshots/verification.png)
